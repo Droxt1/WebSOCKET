@@ -13,10 +13,12 @@ type User struct {
 // the context is used to pass the context to the repository so we can use it to cancel the request if needed
 type Repository interface {
 	CreateUser(ctx context.Context, user *User) (*User, error)
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
 }
 
 type Service interface {
 	CreateUser(c context.Context, user *CreateUserRequest) (*CreateUserResponse, error)
+	LoginUser(c context.Context, user *LoginUserRequest) (*LoginUserResponse, error)
 }
 
 type CreateUserRequest struct {
@@ -29,4 +31,13 @@ type CreateUserResponse struct {
 	ID       string `json:"id" db:"id"`
 	Username string `json:"username" db:"username"`
 	Email    string `json:"email" db:"email"`
+}
+type LoginUserRequest struct {
+	Email    string `json:"email" db:"email"`
+	Password string `json:"password" db:"password"`
+}
+type LoginUserResponse struct {
+	accessToken string
+	Username    string `json:"username" db:"username"`
+	ID          string `json:"id" db:"id"`
 }
