@@ -6,6 +6,7 @@ import (
 	_ "server/cmd/docs"
 	"server/db"
 	"server/internal/user"
+	"server/internal/ws"
 	"server/router"
 )
 
@@ -29,10 +30,13 @@ func main() {
 	userRepo := user.NewRepository(dbConn.GetDB())
 	userService := user.NewService(userRepo)
 	userHandler := user.NewHandler(userService)
-	router.InitRouter(userHandler)
 
-	if err := router.Start(":8080"); err != nil {
-		log.Fatalf("could not start server: %v", err)
-	}
+	hub := ws.NewHub()
+	wsHandler := ws.NewHandler(hub)
+	go hub.Run()
+
+	router.InitRouter(userHandler, wsHandler)
+
+	router.Start("0.0.0.0:8080")
 
 }
