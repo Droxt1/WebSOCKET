@@ -1,0 +1,95 @@
+swagger: "2.0"
+info:
+  description: "This is a websocket server for chat application"
+  title: "Websocket API"
+  version: "1.0"
+host: "localhost:8080"
+basePath: "/api/v1"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+tags:
+  - name: "user"
+    description: "User operations"
+paths:
+  /api/v1/signup:
+    post:
+      tags:
+        - "user"
+      summary: "Create a new user"
+      description: "Create a new user"
+      parameters:
+        - in: "body"
+          name: "userRequest"
+          description: "Create User Request"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateUserRequest"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/CreateUserResponse"
+        400:
+          description: "Bad request"
+        500:
+          description: "Internal server error"
+  /api/v1/login:
+    post:
+      tags:
+        - "user"
+      summary: "Login user"
+      description: "Login user"
+      parameters:
+        - in: "body"
+          name: "userRequest"
+          description: "Login User Request"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginUserRequest"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/LoginUserResponse"
+        400:
+          description: "Bad request"
+        500:
+          description: "Internal server error"
+  /api/v1/logout:
+    get:
+      tags:
+        - "user"
+      summary: "Logout user"
+      description: "Logout user"
+      responses:
+        200:
+          description: "Successful operation"
+        500:
+          description: "Internal server error"
+definitions:
+  CreateUserRequest:
+    type: "object"
+    properties:
+    # Define the properties of CreateUserRequest here
+    required:
+      - "property1"
+      - "property2"
+  CreateUserResponse:
+    type: "object"
+    properties:
+    # Define the properties of CreateUserResponse here
+  LoginUserRequest:
+    type: "object"
+    properties:
+    # Define the properties of LoginUserRequest here
+    required:
+      - "property1"
+      - "property2"
+  LoginUserResponse:
+    type: "object"
+    properties:
+    # Define the properties of LoginUserResponse here

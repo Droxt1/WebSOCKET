@@ -21,18 +21,25 @@ func NewRepository(db DBTX) Repository {
 	return &repository{db}
 }
 
-// CreateUser
-// 1. create a query
-// 2. execute the query
-// 3. scan the result to get the last insert id
-// 4. return the user with the last insert id
 func (r *repository) CreateUser(ctx context.Context, user *User) (*User, error) {
-	var lastInsertID int64
-	query := `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id`
-	err := r.db.QueryRowContext(ctx, query, user.Username, user.Email, user.Password).Scan(&lastInsertID)
+	var lastInsertId int
+	query := "INSERT INTO users(username, password, email) VALUES ($1, $2, $3) returning id"
+	err := r.db.QueryRowContext(ctx, query, user.Username, user.Password, user.Email).Scan(&lastInsertId)
 	if err != nil {
 		return &User{}, err
 	}
-	user.ID = lastInsertID
+
+	user.ID = int64(lastInsertId)
 	return user, nil
+}
+
+func (r *repository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	u := User{}
+	query := "SELECT id, email, username, password FROM users WHERE email = $1"
+	err := r.db.QueryRowContext(ctx, query, email).Scan(&u.ID, &u.Email, &u.Username, &u.Password)
+	if err != nil {
+		return &User{}, nil
+	}
+
+	return &u, nil
 }
