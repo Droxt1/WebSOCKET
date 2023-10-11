@@ -17,7 +17,7 @@ import (
 //	@BasePath		/api/v1
 //swagger:route POST /signup user CreateUserRequest
 // Create a new user
-// responses:
+// responses:git push -u origin main
 // 	200: CreateUserResponse
 
 func main() {
