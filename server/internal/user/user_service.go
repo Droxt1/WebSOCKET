@@ -3,13 +3,10 @@ package user
 import (
 	"context"
 	"github.com/golang-jwt/jwt/v4"
+	"os"
 	"server/util"
 	"strconv"
 	"time"
-)
-
-const (
-	secrestKey = "secret"
 )
 
 type service struct {
@@ -32,6 +29,7 @@ func (s *service) CreateUser(c context.Context, userRequest *CreateUserRequest) 
 	if err != nil {
 		return nil, err
 	}
+
 	u := &User{
 		Username: userRequest.Username,
 		Email:    userRequest.Email,
@@ -82,7 +80,7 @@ func (s *service) LoginUser(c context.Context, userRequest *LoginUserRequest) (*
 		},
 	})
 	// signed string as an access token
-	ss, err := token.SignedString([]byte(secrestKey))
+	ss, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
 		return &LoginUserResponse{}, err
 	}

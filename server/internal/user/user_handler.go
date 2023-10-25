@@ -1,17 +1,19 @@
 package user
 
 import (
+	"database/sql"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	_ "server/cmd/docs"
+	"server/util"
 )
 
 type Handler struct {
 	Service
+	db *sql.DB
 }
 
 func NewHandler(s Service) *Handler {
-	return &Handler{s}
+	return &Handler{Service: s}
 }
 
 //paths information
@@ -31,6 +33,25 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	//validate email
+	validEmail, err := util.IsEmailValid(userRequest.Email)
+	if !validEmail {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	////check if email is already in use
+	//notUsedEmail, _ := util.IsEmailExist(h.db, userRequest.Email)
+	//if !notUsedEmail {
+	//	c.JSON(http.StatusBadRequest, gin.H{"error": "email already in use"})
+	//	return
+	//}
+	////check if username is already in use
+	//notUsedUsername, _ := util.IsUsernameExist(h.db, userRequest.Username)
+	//if !notUsedUsername {
+	//	c.JSON(http.StatusBadRequest, gin.H{"error": "username already in use"})
+	//	return
+	//}
 
 	userResponse, err := h.Service.CreateUser(c.Request.Context(), &userRequest)
 	if err != nil {
