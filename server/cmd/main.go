@@ -26,7 +26,7 @@ func main() {
 
 	router.InitRouter(userHandler, wsHandler)
 
-	err = router.Start(":8080")
+	err = router.Start(":3000")
 	if err != nil {
 		return
 	}
