@@ -16,16 +16,6 @@ func NewHandler(s Service) *Handler {
 	return &Handler{Service: s}
 }
 
-//paths information
-
-// @summary Create a new user
-// @description Create a new user
-// @tags user
-// @accept json
-// @produce json
-// @param userRequest body CreateUserRequest true "Create User Request"
-// @success 200 {object} CreateUserResponse
-// @router /signup [post]
 func (h *Handler) CreateUser(c *gin.Context) {
 	var userRequest CreateUserRequest
 
@@ -40,18 +30,13 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	////check if email is already in use
-	//notUsedEmail, _ := util.IsEmailExist(h.db, userRequest.Email)
-	//if !notUsedEmail {
-	//	c.JSON(http.StatusBadRequest, gin.H{"error": "email already in use"})
-	//	return
-	//}
-	////check if username is already in use
-	//notUsedUsername, _ := util.IsUsernameExist(h.db, userRequest.Username)
-	//if !notUsedUsername {
-	//	c.JSON(http.StatusBadRequest, gin.H{"error": "username already in use"})
-	//	return
-	//}
+
+	//validate username
+	validUsername, err := util.IsUsernameValid(userRequest.Username)
+	if !validUsername {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	userResponse, err := h.Service.CreateUser(c.Request.Context(), &userRequest)
 	if err != nil {
@@ -62,14 +47,6 @@ func (h *Handler) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, userResponse)
 }
 
-// @summary Login user
-// @description Login user
-// @tags user
-// @accept json
-// @produce json
-// @param userRequest body LoginUserRequest true "Login User Request"
-// @success 200 {object} LoginUserResponse
-// @router /login [post]
 func (h *Handler) Login(c *gin.Context) {
 	var user LoginUserRequest
 
@@ -100,13 +77,6 @@ func (h *Handler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-// @summary Logout user
-// @description Logout user
-// @tags user
-// @accept json
-// @produce json
-// @success 200 {object} string
-// @router /logout [get]
 func (h *Handler) Logout(c *gin.Context) {
 	c.SetCookie("access_token", "",
 		-1,

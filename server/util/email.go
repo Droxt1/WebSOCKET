@@ -1,7 +1,6 @@
 package util
 
 import (
-	"database/sql"
 	"errors"
 	"regexp"
 )
@@ -14,13 +13,4 @@ func IsEmailValid(email string) (bool, error) {
 	} else {
 		return false, errors.New("email address is not valid")
 	}
-}
-
-func IsEmailExist(db *sql.DB, email string) (bool, error) {
-	var exists bool
-	err := db.QueryRow("SELECT exists (SELECT 1 FROM users WHERE email=$1)", email).Scan(&exists)
-	if err != nil {
-		return false, err
-	}
-	return exists, nil
 }

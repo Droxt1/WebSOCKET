@@ -33,6 +33,11 @@ func (u *User) Validate() error {
 
 	}
 
+	validUsername, _ := util.IsUsernameValid(u.Username)
+	if !validUsername {
+		return errors.New("invalid username format")
+	}
+
 	// Check if password is empty
 	if strings.TrimSpace(u.Password) == "" {
 		return errors.New("password is required")

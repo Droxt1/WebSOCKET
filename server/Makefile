@@ -1,15 +1,22 @@
-POSTGRES_CONTAINER_NAME = websocketpostgres1
+
+POSTGRES_CONTAINER_NAME = WebSocket-Postgres
 POSTGRES_PORT = 5433
 POSTGRES_USER = root
 POSTGRES_PASSWORD = password
 POSTGRES_DB = go-chat
 MIGRATIONS_DIR = db/migrations
 
-postgresinit:
-	docker run --name $(POSTGRES_CONTAINER_NAME) -p $(POSTGRES_PORT):5432 -e POSTGRES_USER=$(POSTGRES_USER) -e POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) -d postgres:15-alpine
+dockerup:
+	docker-compose up
 
-startpostgres:
-	sudo docker start $(POSTGRES_CONTAINER_NAME)
+dockerdown:
+	docker-compose down
+
+startcontainer:
+	docker start $(POSTGRES_CONTAINER_NAME)
+
+stopcontainer:
+	docker stop $(POSTGRES_CONTAINER_NAME)
 
 postgres:
 	docker exec -it $(POSTGRES_CONTAINER_NAME) psql
@@ -44,4 +51,11 @@ golint:
 fmt:
 	go fmt ./...
 
-.PHONY: postgresinit startpostgres postgres psqlpostgres createdb dropdb createmigration migrateup migratedown vet test golint fmt
+build:
+	go build -o app ./cmd
+
+run:
+	./app
+
+# Declare targets as phony (no actual files with these names)
+.PHONY: dockerup dockerdown startcontainer stopcontainer postgres psqlpostgres createdb dropdb createmigration migrateup migratedown vet test golint fmt build run

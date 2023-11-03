@@ -1,0 +1,26 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: WebSocket-Postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: go-chat
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  websocket-app:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+    image: go-websocket-app
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080" # Expose the WebSocket server's port
+
+volumes:
+  postgres-data:

@@ -1,12 +1,17 @@
 package util
 
-import "database/sql"
+import (
+	"errors"
+	"regexp"
+)
 
-func IsUsernameExist(db *sql.DB, username string) (bool, error) {
-	var exists bool
-	err := db.QueryRow("SELECT exists (SELECT 1 FROM users WHERE username=$1)", username).Scan(&exists)
-	if err != nil {
-		return false, err
+func IsUsernameValid(username string) (bool, error) {
+	const usernameRegexPattern = `^[a-zA-Z0-9_-]{3,20}$`
+
+	matcher := regexp.MustCompile(usernameRegexPattern)
+	if matcher.MatchString(username) {
+		return true, nil
+	} else {
+		return false, errors.New("username is not valid")
 	}
-	return exists, nil
 }
