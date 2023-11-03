@@ -17,18 +17,15 @@ type Message struct {
 	Content  string `json:"content"`
 	RoomID   string `json:"roomId"`
 	Username string `json:"username"`
+	IsDirect bool   `json:"isDirect"`
 }
 
 // write message to client
 func (c *Client) writeMessage() {
-	//close the connection when the function returns because we don't want to leave the connection open
-	//defer is used to ensure that the connection is closed when the function returns
 	defer func() {
 		c.Conn.Close()
 	}()
-	//loop over the message channel and write the message to the client
 	for {
-
 		message, ok := <-c.Message
 		if !ok {
 			return
@@ -37,15 +34,11 @@ func (c *Client) writeMessage() {
 		if err != nil {
 			return
 		}
-
 	}
 }
 
-// read message from client
 func (c *Client) readMessage(hub *Hub) {
 	defer func() {
-		//unregister the client from the hub when the function returns
-		//because we don't want to leave the client registered in the hub
 		hub.Unregister <- c
 		c.Conn.Close()
 	}()
@@ -62,10 +55,10 @@ func (c *Client) readMessage(hub *Hub) {
 			Content:  string(m),
 			RoomID:   c.RoomID,
 			Username: c.Username,
+			IsDirect: true, // Mark as direct message
 		}
-		//send the message to the hub
+
 		hub.Broadcast <- message
 
 	}
-
 }

@@ -1,5 +1,7 @@
 package ws
 
+import "sync"
+
 type Room struct {
 	ID      string             `json:"id"`
 	Name    string             `json:"name"`
@@ -8,6 +10,7 @@ type Room struct {
 
 type Hub struct {
 	Rooms      map[string]*Room
+	mu         sync.Mutex // Add a mutex for safe access to Rooms
 	Register   chan *Client
 	Unregister chan *Client
 	Broadcast  chan *Message

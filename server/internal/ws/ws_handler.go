@@ -1,6 +1,5 @@
 package ws
 
-import "C"
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -29,6 +28,14 @@ func (h *Handler) CreateRoom(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	//hub lock for safe access to Rooms
+	h.hub.mu.Lock()
+	defer h.hub.mu.Unlock()
+
+	if _, exists := h.hub.Rooms[req.ID]; exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Room already exists"})
+		return
+	}
 
 	h.hub.Rooms[req.ID] = &Room{
 		ID:      req.ID,
@@ -49,13 +56,22 @@ var upgrader = websocket.Upgrader{
 }
 
 func (h *Handler) JoinRoom(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// Parse the room ID from the request URL
+	roomID := c.Param("roomId")
+
+	// Check if the room exists
+	if _, ok := h.hub.Rooms[roomID]; !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Room does not exist"})
+
 		return
 	}
-	//ws://localhost:8080/ws/room/:roomId?userId=1&username=user
-	roomID := c.Param("roomId")
+
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to upgrade connection"})
+		return
+	}
+
 	clientID := c.Query("userId")
 	username := c.Query("username")
 
@@ -71,18 +87,14 @@ func (h *Handler) JoinRoom(c *gin.Context) {
 		Content:  "New user joined the room",
 		RoomID:   roomID,
 		Username: username,
+		IsDirect: true, // Mark as a direct message
 	}
 
-	//1-Register client to the room
 	h.hub.Register <- client
-
 	h.hub.Broadcast <- m
-	//separate go routine for writing the message to the client because we don't want to block the main thread
 
 	go client.writeMessage()
-
 	client.readMessage(h.hub)
-
 }
 
 type RoomRes struct {
@@ -107,20 +119,27 @@ type ClientRes struct {
 }
 
 func (h *Handler) GetClients(c *gin.Context) {
-	var clients []ClientRes
 	roomId := c.Param("roomId")
 
-	if _, ok := h.hub.Rooms[roomId]; !ok {
-		clients = make([]ClientRes, 0)
-		c.JSON(http.StatusOK, clients)
+	// Check if the room exists
+	h.hub.mu.Lock()
+	room, ok := h.hub.Rooms[roomId]
+	h.hub.mu.Unlock()
+
+	if !ok {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
+		return
 	}
 
-	for _, c := range h.hub.Rooms[roomId].Clients {
+	var clients []ClientRes
+	h.hub.mu.Lock()
+	for _, c := range room.Clients {
 		clients = append(clients, ClientRes{
 			ID:       c.ID,
 			Username: c.Username,
 		})
 	}
+	h.hub.mu.Unlock()
 
 	c.JSON(http.StatusOK, clients)
 }
