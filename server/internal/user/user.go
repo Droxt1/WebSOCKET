@@ -16,17 +16,14 @@ type User struct {
 }
 
 func (u *User) Validate() error {
-	// Check if username is empty
 	if strings.TrimSpace(u.Username) == "" {
 		return errors.New("username is required")
 	}
 
-	// Check if email is empty
 	if strings.TrimSpace(u.Email) == "" {
 		return errors.New("email is required")
 	}
 
-	// Check if email format is valid
 	validEmail, _ := util.IsEmailValid(u.Email)
 	if !validEmail {
 		return errors.New("invalid email format")
@@ -38,7 +35,6 @@ func (u *User) Validate() error {
 		return errors.New("invalid username format")
 	}
 
-	// Check if password is empty
 	if strings.TrimSpace(u.Password) == "" {
 		return errors.New("password is required")
 	}
@@ -53,6 +49,9 @@ type Repository interface {
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 }
 
+// Service interface is used to define the methods that we want to use in our handler
+// It's basically a mere implementation for the business logic of the application
+// and it's used to separate the business logic from the transport layer
 type Service interface {
 	CreateUser(c context.Context, user *CreateUserRequest) (*CreateUserResponse, error)
 	LoginUser(c context.Context, user *LoginUserRequest) (*LoginUserResponse, error)
