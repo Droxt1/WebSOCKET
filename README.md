@@ -7,6 +7,11 @@ This is a real-time communication server built with the Go Programming Language.
 - A robust WebSocket server delivering seamless real-time communication between users
 - Integrated PostgreSQL database with migrations for reliable data management
 - Docker Compose for straightforward development environment setup
+- A simple and intuitive API for user management
+- A well-structured codebase that is easy to understand and extend
+- A Makefile for common development tasks
+- Documentation for all endpoints and actions
+
 
 ## Project Structure
 
@@ -23,6 +28,7 @@ The project layout is structured as follows:
 - `router`: Houses the HTTP router and API routes
 - `util`: A collection of utility functions
 
+
 ## Overview of the MVCS Design Pattern
 
 The MVCS pattern is chosen over traditional MVC due to the additional service layer it introduces. By adding a service layer, business logic and high-level operations are better managed. This separation of concerns improves scalability, reusability, testability, and flexibility. The implementation details include:
@@ -31,6 +37,8 @@ The MVCS pattern is chosen over traditional MVC due to the additional service la
 - **View**: The `internal/ws` package handles WebSocket connections and messages.
 - **Controller**: The WebSocket handlers manage flow, routing, and interaction with models and the WebSocket hub.
 - **Service**: Encapsulates complex business logic and service operations.
+- **Repository**: Manages database operations and queries.
+
 
 ![image](https://github.com/Droxt1/WebSOCKET/assets/80992251/63312f44-946c-45e5-80f3-b0d65bed1843)
 
@@ -92,7 +100,7 @@ Ensure you have the following installed on your machine:
 
 ## Working with Database Migrations
 
-Below, find instructions on creating and applying database migrations:
+Instructions on creating and applying database migrations:
 
 - To create a new migration:
 
@@ -107,3 +115,4 @@ Below, find instructions on creating and applying database migrations:
    ```
    Ensure to put the SQL code in the `sql.up` file before applying migrations.  
 
+[Documentation](server/documentation.md)
