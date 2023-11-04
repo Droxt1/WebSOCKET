@@ -40,7 +40,7 @@ The MVCS pattern is chosen over traditional MVC due to the additional service la
 - **Repository**: Manages database operations and queries.
 
 
-![image](https://github.com/Droxt1/WebSOCKET/assets/80992251/63312f44-946c-45e5-80f3-b0d65bed1843)
+![image](https://github.com/Droxt1/WebSOCKET/assets/80992251/95c6060c-fc34-4968-b969-687b5a05676a)
 
 ## Essence of the Hub-Based Architecture
 
@@ -50,7 +50,7 @@ The MVCS pattern is chosen over traditional MVC due to the additional service la
 - **Initialization and Management**: Hub manages client connections and handles client additions and disconnections.
 - **Broadcasting**: Efficient broadcasting of messages to all connected clients.
 
-![image](https://github.com/Droxt1/WebSOCKET/assets/80992251/9c38f2c1-a3c2-4247-91e1-43ca54cb2c27)
+![image](https://github.com/Droxt1/WebSOCKET/assets/80992251/68d9d97a-506c-40a3-ac5c-74fab5162246)
 
 
 ## Database Schema
