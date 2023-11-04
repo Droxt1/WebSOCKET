@@ -2,7 +2,7 @@ version: '3'
 services:
   postgres:
     image: postgres:latest
-    container_name: WebSocket-Postgres
+    container_name: websocketpostgres1
     ports:
       - "5433:5432"
     environment:
@@ -20,7 +20,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "8080:8080" # Expose the WebSocket server's port
+      - "8080:8080"
 
 volumes:
   postgres-data:
